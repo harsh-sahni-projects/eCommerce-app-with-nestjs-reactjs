@@ -11,6 +11,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { cartActions } from "../store/cart-slice";
 import { useNavigate } from "react-router-dom";
 import Header from "./Header";
+import { SERVER_URL } from "../assets/constants";
 
 
 
@@ -20,7 +21,6 @@ const Cart = () => {
   const cart = useSelector(state => state.cart);
   const user = useSelector(state => state.user.user);
 
-  console.log(user)
 
   const addItemToCart = (e) => {
     const bookDetails = JSON.parse(e.target.dataset.bookDetails)
@@ -32,6 +32,16 @@ const Cart = () => {
     dispatch(cartActions.removeItem(bookDetails))
   }
 
+  const placeOrder = async () => {
+    try {
+      const endpoint = SERVER_URL + '/users/place-order';
+      // const res = 
+    } catch (err) {
+      console.log(err);
+      alert(err.message);
+    }
+  }
+
   return (
     <>
       <Header/>
@@ -39,7 +49,7 @@ const Cart = () => {
         <Typography variant="h3" color="initial">Your cart</Typography>
         {cart.items.map((book,i) => (
           <Grid container spacing={1} key={i} sx={{'mt': '1rem'}}>
-            <Grid item xs={4}>{book.name}</Grid>
+            <Grid item xs={4}>{book.title}</Grid>
             <Grid item xs={2}>Rs. {book.unitPrice} / book</Grid>
             <Grid item xs={4}>
               <ButtonGroup variant="outlined" >
@@ -68,7 +78,7 @@ const Cart = () => {
           <Grid item xs={2}>Rs. {cart.amount}</Grid>
         </Grid>
 
-        {user && <Button>Proceed to checkout</Button>}
+        {user && <Button onClick={placeOrder}>Place order</Button>}
 
         {!user &&
         <Box sx={{'mt': '1rem'}}>

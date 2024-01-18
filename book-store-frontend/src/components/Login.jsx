@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router';
 import axios from 'axios';
 
 import { SERVER_URL } from '../assets/constants';
-import { authActions } from '../store/auth-slice';
 import { userActions } from '../store/user-slice';
 import loginImg from '/login3.png'
 import LoginForm from './LoginFrom';

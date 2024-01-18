@@ -2,10 +2,23 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 
+import * as mongoose from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { User } from './schemas/users.schema';
+import { PlaceOrderDto } from 'src/books/dto/place-order.dto';
+import { getNewToken } from '../common/token-manager';
+import { Request, Response } from 'express';
+
+const COOKIE_AGE = 60 * 60 * 1000; // ms
+
 @Injectable()
 export class UsersService {
-  private allUsers = [];
-  create(creds: CreateUserDto) {
+  constructor(
+    @InjectModel(User.name)
+    private userModel: mongoose.Model<User>
+  ) {}
+
+  async create(creds: CreateUserDto, req: Request, res: Response) {
     let { username, password, confirmPassword } = creds;
     username = username.trim();
     
@@ -16,58 +29,88 @@ export class UsersService {
       throw new HttpException("Passwords don't match", HttpStatus.BAD_REQUEST);
     
     // USER EXISTS
-    // client = await getDbClient();
-    // const db = client.db(DB_NAME);
-    // const coll = db.collection(COLL_NAME);
+    const alreadyPresentUser = await this.userModel.find({ username });
+    
+    if (alreadyPresentUser.length > 0) {
+      throw new HttpException('User already exists', HttpStatus.CONFLICT);
+    }
 
-    // const alreadyPresentUser = await coll.findOne({ username });
-    // if (alreadyPresentUser) {
-    //   return res.status(409).send('User with this username already present');
-    // }
-
-    // // ADD USER TO DB
-    // const date = new Date();
+    // CREATE USER
     const userDetails = {
       username,
       password,
       orders: []
     }
+    await this.userModel.create(userDetails)
 
-    // const inserted = await coll.insertOne(userDetails);
+    // COOKIE
+    const token = await getNewToken(username);
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: true,
+      maxAge: COOKIE_AGE // ms
+    });
 
-    // if (!inserted) {
-    //   return res.status(500).send('User not created');
-    // }
-
-    // LOGIN AFTER CREATING ACCOUNT
-    // const token = await getNewToken(username);
-    // res.cookie('token', token, {
-    //   httpOnly: true,
-    //   secure: true,
-    //   maxAge: 60 * 60 * 1000 // ms
-    // });
-
-    delete userDetails.password;
-    return {
+    res.send({
       status: 200,
       message: 'User created',
-      userDetails
-    }
-  }
-
-  login(creds: LoginDto) {
-    return {
       userDetails: {
-        username: creds.username,
+        username,
         orders: []
       }
+    })
+  }
+
+  async login(creds: LoginDto, req: Request, res: Response) {
+    const usersArr = await this.userModel.find({username: creds.username});
+    if (!usersArr.length) {
+      throw new HttpException('Invalid username', HttpStatus.NOT_FOUND);
     }
+    const { username, password, orders } = usersArr[0];
+    if (creds.password !== password) {
+      throw new HttpException('Wrong password', HttpStatus.BAD_REQUEST);
+    }
+
+    const token = await getNewToken(username);
+    
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: true,
+      maxAge: COOKIE_AGE // ms
+    });
+
+    res.send({
+      userDetails: {
+        username,
+        orders
+      }
+    })
   }
 
   logout() {
     return {
       status: 200,
       message: 'Loggout successfully'
+    }
+  }
+
+  async placeOrder(items: PlaceOrderDto[]) {
+    let amount = 0;
+    items.forEach(item => {
+      amount += item.quantity * item.unitPrice
+    });
+    const orderDetails = {
+      items,
+      amount,
+      date: new Date()
+    }
+    // await this.userModel.updateOne({
+    //   username
+    // })
+    console.log('Order placed with items:', items);
+    return {
+      status: 'Order placed',
+      items
     }
   }
 

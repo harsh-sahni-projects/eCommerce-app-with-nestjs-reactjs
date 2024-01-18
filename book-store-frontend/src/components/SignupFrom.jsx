@@ -6,7 +6,6 @@ import { IoIosCheckboxOutline  } from "react-icons/io";
 import { SERVER_URL } from '../assets/constants';
 import { useDispatch } from "react-redux";
 import { userActions } from "../store/user-slice";
-import { authActions } from "../store/auth-slice";
 
 
 const SignupForm = (props) => {
@@ -82,7 +81,7 @@ const SignupForm = (props) => {
       const errMsg = (err?.response?.data) ? err.response.data.message : err.message;
       console.log(err);
       console.log(errMsg)
-      // alert(errMsg);
+      alert(errMsg);
     }
   }
 

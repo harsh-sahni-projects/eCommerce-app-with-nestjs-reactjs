@@ -1,6 +1,7 @@
 export class PlaceOrderDto {
   id: number;
   name: string;
-  price: number;
+  author: string;
+  unitPrice: number;
   quantity: number;
 }

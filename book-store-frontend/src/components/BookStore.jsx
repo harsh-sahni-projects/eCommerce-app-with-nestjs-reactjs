@@ -10,7 +10,6 @@ import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import profileIcon from '/profile-icon.png';
 
 import { SERVER_URL } from '../assets/constants';
-import { authActions } from '../store/auth-slice';
 import { userActions } from '../store/user-slice';
 import { useRef } from 'react';
 
@@ -23,6 +22,7 @@ const BookStore = () => {
   
   const dispatch = useDispatch();
   const [allBooks, setAllBooks] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   
   const addItemToCart = (e) => {
     const bookDetails = JSON.parse(e.target.dataset.bookDetails)
@@ -41,10 +41,12 @@ const BookStore = () => {
         const endpoint = SERVER_URL + '/books';
         const res = await axios.get(endpoint);
         setAllBooks([...res.data]);
+        setIsLoading(false);
       } catch (err) {
         console.log(err);
       }
     }
+    setIsLoading(true);
     getAllBooks();
     // const checkToken = async () => {
     //   try {
@@ -71,14 +73,17 @@ const BookStore = () => {
     <>
       <Header/>
       <Container>
-        {allBooks.length && allBooks.map(book => (
-          <div key={book.id}>
-            <div>{book.id} {book.name} {book.price}</div>
+        {!isLoading && allBooks.map(book => (
+          <div key={book._id}>
+            <div>{book.title} / {book.author} / {book.unitPrice}</div>
             <button data-book-details={JSON.stringify(book)} onClick={addItemToCart}>Add</button>
             <button data-book-details={JSON.stringify(book)} onClick={removeItem}>Remove</button>
           </div>
         ))}
-        {!allBooks.length && 
+        {!isLoading && !allBooks.length && 
+          <div>Database has no books, please add some books details in db.</div>
+        }
+        {isLoading && 
           <div>Loading...</div>
         }
       </Container>

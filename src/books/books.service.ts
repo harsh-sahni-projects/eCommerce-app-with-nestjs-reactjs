@@ -1,35 +1,41 @@
 import { Injectable } from '@nestjs/common';
-import { PlaceOrderDto } from './dto/place-order.dto';
+import { Book } from './schemas/books.schema';
+import * as mongoose from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class BooksService {
-  private allBooks = [
-    {
-      id: 0,
-      name: "Think & Grow Rich",
-      unitPrice: 350
-    },
-    {
-      id: 1,
-      name: "The Man Who Sold His Ferrari",
-      unitPrice: 400
-    },
-    {
-      id: 2,
-      name: "The Richest Man in Babylon",
-      unitPrice: 290
+  constructor(
+    @InjectModel(Book.name)
+    private bookModel: mongoose.Model<Book>
+  ) {
+    async function populateDb() {
+      try {
+        const books = await bookModel.find();
+        if (books.length > 0) return;
+ 
+        let allPromises = [];
+        for (let i=1; i<=10; i++) { 
+          let bookDetails = {
+            title: 'Book ' + i,
+            author: 'Author ' + i,
+            unitPrice: 500
+          }
+          allPromises.push(bookModel.create(bookDetails));
+        }
+        await Promise.all(allPromises);
+        // let allBooks = await bookModel.find();
+      } catch (err) { 
+        throw err;
+      }
     }
-  ];
-
-  getAllBooks() {
-    return this.allBooks;
+    populateDb();
   }
 
-  placeOrder(items: PlaceOrderDto[]) {
-    console.log('Order placed with items:', items);
-    return {
-      status: 'Order placed',
-      items
-    }
+  async getAllBooks(): Promise<Book[]> {
+    const books = await this.bookModel.find();
+    return books;
   }
+
+  
 }

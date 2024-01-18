@@ -14,11 +14,6 @@ export class BooksController {
     return this.booksService.getAllBooks();
   }
 
-  @Post('place-order')
-  placeOrder(@Body() items: PlaceOrderDto[]) {
-    return this.booksService.placeOrder(items);
-  }
-
   // // GET /books/:id
   // @Get(':id')
   // getBookDetails(@Param('id') id: string) {

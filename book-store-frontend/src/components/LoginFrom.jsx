@@ -7,7 +7,6 @@ import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import { FaArrowLeftLong } from "react-icons/fa6";
 
 import { SERVER_URL } from '../assets/constants';
-import { authActions } from '../store/auth-slice';
 import { userActions } from '../store/user-slice';
 
 const LoginForm = (props) => {
