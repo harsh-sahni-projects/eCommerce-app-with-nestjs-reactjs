@@ -11,10 +11,15 @@ export class User {
 
   @Prop()
   orders: {
-    title: string,
-    author: string,
-    unitPrice: number,
-    quantity: number
+    amount: number;
+    items: {
+      _id: string;
+      title: string;
+      author: string;
+      unitPrice: number;
+      quantity: number;
+    }[];
+    timestamp: string;
   }[];
 }
 

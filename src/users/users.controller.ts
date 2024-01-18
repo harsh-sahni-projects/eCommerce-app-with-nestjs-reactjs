@@ -2,8 +2,8 @@ import { Controller, Get, Post, Body, Req, Res } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
-import { PlaceOrderDto } from 'src/books/dto/place-order.dto';
 import { Request, Response } from 'express';
+import { PlaceOrderDto } from './dto/place-order.dto';
 
 @Controller('users')
 export class UsersController {
@@ -15,8 +15,8 @@ export class UsersController {
   }
   
   @Post('login')
-  async login(@Body() creds: LoginDto, @Req() req: Request, @Res() res: Response) {
-    return await this.usersService.login(creds, req, res);
+  login(@Body() creds: LoginDto, @Req() req: Request, @Res() res: Response) {
+    return this.usersService.login(creds, req, res);
   }
 
   @Get('logout')
@@ -25,8 +25,8 @@ export class UsersController {
   }
 
   @Post('place-order')
-  placeOrder(@Body() items: PlaceOrderDto[]) {
-    return this.usersService.placeOrder(items);
+  placeOrder(@Body() items: PlaceOrderDto[], @Req() req: Request, @Res() res: Response) {
+    return this.usersService.placeOrder(items, req, res);
   }
 
   // @Get()

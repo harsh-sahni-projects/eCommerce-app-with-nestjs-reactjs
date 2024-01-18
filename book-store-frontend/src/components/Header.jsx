@@ -18,11 +18,8 @@ axios.defaults.withCredentials = true;
 const Header = (props) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const setCartVisible = props.setCartVisible;
   const totalItems = useSelector(state => state.cart.totalItems);
   const user = useSelector(state => state.user.user);
-  console.log(user);
-  // const cart = useSelector(state => state.cart);
   const logout = async () => {
     try {
       const endpoint = SERVER_URL + '/users/logout';

@@ -5,9 +5,9 @@ import { LoginDto } from './dto/login.dto';
 import * as mongoose from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/users.schema';
-import { PlaceOrderDto } from 'src/books/dto/place-order.dto';
 import { getNewToken } from '../common/token-manager';
 import { Request, Response } from 'express';
+import { PlaceOrderDto } from './dto/place-order.dto';
 
 const COOKIE_AGE = 60 * 60 * 1000; // ms
 
@@ -94,24 +94,14 @@ export class UsersService {
     }
   }
 
-  async placeOrder(items: PlaceOrderDto[]) {
-    let amount = 0;
-    items.forEach(item => {
-      amount += item.quantity * item.unitPrice
-    });
-    const orderDetails = {
-      items,
-      amount,
-      date: new Date()
-    }
-    // await this.userModel.updateOne({
-    //   username
-    // })
-    console.log('Order placed with items:', items);
-    return {
+  async placeOrder(orderDetails: PlaceOrderDto[], req: Request, res: Response) {
+    const userDetails = req['userDetails'];
+    // const usersArr = await this.userModel.find({username: userDetails.username});
+    // console.log(JSON.stringify(usersArr,null,2));
+    await this.userModel.updateOne({ username: userDetails.username }, { $push: { orders: orderDetails}});
+    res.send({
       status: 'Order placed',
-      items
-    }
+    })
   }
 
   // getUserDetails(username: string) {

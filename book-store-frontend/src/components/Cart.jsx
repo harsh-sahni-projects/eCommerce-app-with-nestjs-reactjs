@@ -12,7 +12,7 @@ import { cartActions } from "../store/cart-slice";
 import { useNavigate } from "react-router-dom";
 import Header from "./Header";
 import { SERVER_URL } from "../assets/constants";
-
+import axios from 'axios';
 
 
 const Cart = () => {
@@ -35,10 +35,21 @@ const Cart = () => {
   const placeOrder = async () => {
     try {
       const endpoint = SERVER_URL + '/users/place-order';
-      // const res = 
+      const res = await axios.post(endpoint, {
+        items: cart.items,
+        amount: cart.amount,
+        timestamp: new Date()
+      })
+      console.log(res.data);
     } catch (err) {
-      console.log(err);
-      alert(err.message);
+      console.log(err)
+      let status = err?.response?.status;
+      let errMsg = err?.response?.data?.message ?? err.message;
+      alert(errMsg);
+
+      if (status && status == 401) {
+        navigate('/login');
+      }
     }
   }
 

@@ -13,7 +13,7 @@ export class AuthMiddleware implements NestMiddleware {
     try {
       const decryptedToken = verifyToken(token);
       const { username } = decryptedToken;
-      req['user'] = {
+      req['userDetails'] = {
         username
       }
     } catch (err) {
@@ -28,9 +28,6 @@ export class AuthMiddleware implements NestMiddleware {
         throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }
-
-    
-
     next();
   }
 }
