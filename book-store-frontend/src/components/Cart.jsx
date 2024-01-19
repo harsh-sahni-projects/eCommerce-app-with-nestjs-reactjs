@@ -1,18 +1,21 @@
+import axios from 'axios';
 import { useDispatch, useSelector } from "react-redux";
-import Grid from '@mui/material/Grid'
+import { cartActions } from "../store/cart-slice";
+import { userActions } from "../store/user-slice";
+import { useNavigate } from "react-router-dom";
+import { SERVER_URL } from "../assets/constants";
 
+import Grid from '@mui/material/Grid'
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import Button from '@mui/material/Button'
-import { Box } from "@mui/system";
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
-import { cartActions } from "../store/cart-slice";
-import { useNavigate } from "react-router-dom";
 import Header from "./Header";
-import { SERVER_URL } from "../assets/constants";
-import axios from 'axios';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import { Box } from "@mui/system";
+import { Card, CardContent } from "@mui/material";
 
 
 const Cart = () => {
@@ -41,6 +44,7 @@ const Cart = () => {
         timestamp: new Date()
       })
       console.log(res.data);
+      alert(res.data.status);
     } catch (err) {
       console.log(err)
       let status = err?.response?.status;
@@ -48,6 +52,7 @@ const Cart = () => {
       alert(errMsg);
 
       if (status && status == 401) {
+        dispatch(userActions.setUser(null));
         navigate('/login');
       }
     }
@@ -57,43 +62,57 @@ const Cart = () => {
     <>
       <Header/>
       <Container>
-        <Typography variant="h3" color="initial">Your cart</Typography>
-        {cart.items.map((book,i) => (
-          <Grid container spacing={1} key={i} sx={{'mt': '1rem'}}>
-            <Grid item xs={4}>{book.title}</Grid>
-            <Grid item xs={2}>Rs. {book.unitPrice} / book</Grid>
-            <Grid item xs={4}>
-              <ButtonGroup variant="outlined" >
-                <Button data-book-details={JSON.stringify(book)} onClick={removeItem}><RemoveIcon  sx={{ pointerEvents: 'none' }}/></Button>
-                <Box sx={{'px': '20px',
-                          'border': '1px solid rgba(25, 118, 210, 0.5)',
-                          'display': 'flex',
-                          'alignItems': 'center',
-                          'color':'#444'}}>
-                  {book.quantity}
-                </Box>
-                <Button  data-book-details={JSON.stringify(book)} onClick={addItemToCart}><AddIcon  style={{ pointerEvents: 'none' }}/></Button>
-                
-              </ButtonGroup>
-            </Grid>
-            <Grid item xs={2}>Rs. {book.quantity * book.unitPrice}</Grid>
+        <Typography variant="h3" color="initial" sx={{my:2}} >Cart</Typography>
+        <Button size="small" variant="text" sx={{mb:2}} onClick={e => navigate('/')}>
+          <KeyboardBackspaceIcon sx={{ mr:1}} />
+          Back to store
+        </Button>
+        {(cart.items.length == 0) && <Typography variant="body1">No items</Typography>}
+
+        {(cart.items.length > 0) && 
+        <Box>
+          {cart.items.map((book,i) => (
+            <Card key={i} sx={{ mb:2 }} elevation={2} >
+              <CardContent>
+                <Grid container spacing={1} sx={{'mtt': '1rem'}}>
+                  <Grid item xs={3}>
+                    <Typography variant="h6">{book.title}</Typography>
+                    <Typography sx={{ mbb: 1.5 }} variant="body2" color="text.secondary" gutterBottom>
+                        {book.author}
+                      </Typography>
+                  </Grid>
+                  <Grid item xs={3}>Rs. {book.unitPrice} / book</Grid>
+                  <Grid item xs={3}>
+                    <ButtonGroup variant="outlined" >
+                      <Button data-book-details={JSON.stringify(book)} onClick={removeItem}><RemoveIcon  sx={{ pointerEvents: 'none' }}/></Button>
+                      <Box sx={{'px': '20px',
+                                'border': '1px solid rgba(25, 118, 210, 0.5)',
+                                'display': 'flex',
+                                'alignItems': 'center',
+                                'color':'#444'}}>
+                        {book.quantity}
+                      </Box>
+                      <Button  data-book-details={JSON.stringify(book)} onClick={addItemToCart}><AddIcon  style={{ pointerEvents: 'none' }}/></Button>
+                      
+                    </ButtonGroup>
+                  </Grid>
+                  <Grid item xs={3}>Rs. {book.quantity * book.unitPrice}</Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+          ))}
+
+          <Grid container spacing={1} sx={{my: 2, px: 2}}>
+            <Grid item xs={9}><Typography variant="h6" sx={{fontWeight: 'bold'}}>Total</Typography></Grid>
+            <Grid item xs={3}><Typography variant="h6" sx={{fontWeight: 'bold'}}>Rs. {cart.amount}</Typography></Grid>
           </Grid>
-        ))}
 
-        <Grid container spacing={1}
-          sx={{'display': 'flex',
-              'justifyContent': 'flex-end',
-              'mt': '1rem'}}>
-          <Grid item xs={4}>Total</Grid>
-          <Grid item xs={6}></Grid>
-          <Grid item xs={2}>Rs. {cart.amount}</Grid>
-        </Grid>
+          {user && <Button onClick={placeOrder}>Place order</Button>}
 
-        {user && <Button onClick={placeOrder}>Place order</Button>}
-
-        {!user &&
-        <Box sx={{'mt': '1rem'}}>
-          Please <Button onClick={e => navigate('/login')}>login</Button> to proceed further
+          {!user &&
+          <Box sx={{'mt': '1rem'}}>
+            Please <Button onClick={e => navigate('/login')}>login</Button> to place order
+          </Box>}
         </Box>}
       </Container>
     </>

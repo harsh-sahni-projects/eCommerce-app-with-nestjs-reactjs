@@ -17,14 +17,13 @@ export class BooksService {
         let allPromises = [];
         for (let i=1; i<=10; i++) { 
           let bookDetails = {
-            title: 'Book ' + i,
-            author: 'Author ' + i,
+            title: 'Book ' + i + ' Title',
+            author: 'Author ' + i + ' Title',
             unitPrice: 500
           }
           allPromises.push(bookModel.create(bookDetails));
         }
         await Promise.all(allPromises);
-        // let allBooks = await bookModel.find();
       } catch (err) { 
         throw err;
       }
@@ -36,6 +35,4 @@ export class BooksService {
     const books = await this.bookModel.find();
     return books;
   }
-
-  
 }

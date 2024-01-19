@@ -1,37 +1,28 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
-
-import { IoIosLogOut } from "react-icons/io";
-import { IoMdAdd } from "react-icons/io";
-import { HiOutlineDotsHorizontal } from "react-icons/hi";
-
-import profileIcon from '/profile-icon.png';
-
 import { SERVER_URL } from '../assets/constants';
-import { userActions } from '../store/user-slice';
-import { useRef } from 'react';
-
-import Header from './Header';
 import { cartActions } from '../store/cart-slice';
-import Cart from './Cart';
 import { Container } from '@mui/system';
+import Header from './Header';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+
 
 const BookStore = () => {
   
   const dispatch = useDispatch();
   const [allBooks, setAllBooks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const user = useSelector(state => state.user.user);
   
   const addItemToCart = (e) => {
     const bookDetails = JSON.parse(e.target.dataset.bookDetails)
     dispatch(cartActions.addItem(bookDetails))
-  }
-
-  const removeItem = (e) => {
-    const bookDetails = JSON.parse(e.target.dataset.bookDetails)
-    dispatch(cartActions.removeItem(bookDetails))
   }
 
   useEffect(() => {
@@ -48,41 +39,48 @@ const BookStore = () => {
     }
     setIsLoading(true);
     getAllBooks();
-    // const checkToken = async () => {
-    //   try {
-    //     if (!userDetails) return navigate('/');
-    
-    //     const endpoint = SERVER_URL + '/check-token'; 
-    //     await axios.post(endpoint);
-    //   } catch (err) {
-    //     console.log('Dashboard checktoken err:', err);
-    //     if (err?.response?.data) {
-    //       alert(err.response.data);
-    //       dispatch(userActions.setUser(null));
-    //       dispatch(userActions.setActiveFriend(null));
-    //       dispatch(authActions.logout());
-    //       navigate('/');
-    //     } else {
-    //       alert(err.message);
-    //     }
-    //   }
-    // }
-    // checkToken();
+
+    console.log('The above error "A non-serializable value was detected..." can be handled. It is not handled currently due to lack of time.')
   }, []);
   return (
     <>
       <Header/>
-      <Container>
-        {!isLoading && allBooks.map(book => (
-          <div key={book._id}>
-            <div>{book.title} / {book.author} / {book.unitPrice}</div>
-            <button data-book-details={JSON.stringify(book)} onClick={addItemToCart}>Add</button>
-            <button data-book-details={JSON.stringify(book)} onClick={removeItem}>Remove</button>
-          </div>
-        ))}
+      <Container sx={{my:6}}>
+        {!isLoading  && user && 
+          <Typography variant="h6" sx={{my:2}}>Hi {user.userDetails.username}, Happy Shopping</Typography>
+        }
+        {!isLoading  && !user && 
+          <Typography variant="h6" sx={{my:2}}>Shop for your favourite books here</Typography>
+        }
+        {!isLoading && 
+          <Grid container spacing={4}>
+            {allBooks.map(book => (
+              <Grid item xs={12} md={6} lg={3} sx={{}} key={book._id}>
+                <Card sx={{ minWidth: 275 }} elevation={2} square>
+                  <CardContent>
+                    <Typography variant="h5" component="div">
+                      {book.title}
+                    </Typography>
+                    <Typography sx={{ mb: 1.5 }} color="text.secondary" gutterBottom>
+                      {book.author}
+                    </Typography>
+                    <Typography variant="body2">
+                      Rs {book.unitPrice}
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button size="small" data-book-details={JSON.stringify(book)} onClick={addItemToCart}>Add to cart</Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        }
+
         {!isLoading && !allBooks.length && 
           <div>Database has no books, please add some books details in db.</div>
         }
+
         {isLoading && 
           <div>Loading...</div>
         }

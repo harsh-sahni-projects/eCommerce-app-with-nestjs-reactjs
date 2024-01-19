@@ -34,7 +34,6 @@ export const verifyToken = (encryptedToken) => {
   try {
     const decryptedToken = _decryptToken(encryptedToken);
     const decodedToken = jwt.verify(decryptedToken, JWT_SECRET);
-    // throw new Error('test err')
     return decodedToken;
   } catch (err) {
     console.log(err);

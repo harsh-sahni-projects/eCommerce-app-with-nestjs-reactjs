@@ -1,54 +1,37 @@
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router';
-import axios from 'axios';
-
-import { SERVER_URL } from '../assets/constants';
-import { userActions } from '../store/user-slice';
-import loginImg from '/login3.png'
+import { useState, useEffect } from 'react';
 import LoginForm from './LoginFrom';
 import SignupForm from './SignupFrom';
+import { Grid } from '@mui/material';
 
 const Login = () => {
   const [signupFormVisible, setSignupFormVisible] = useState(false);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const user = useSelector(state => state.user.user);
 
-  // useEffect(() => {
-  //   async function checkToken() {
-  //     if (!user) return;
-      
-  //     dispatch(authActions.logout());
-  //     dispatch(userActions.setUser(null));
-  //     const endpoint = SERVER_URL + '/check-token'; 
-  //     const res = await axios.post(endpoint);
-  //     const userDetails = res.data;
-  //     dispatch(authActions.login());
-  //     dispatch(userActions.setUser(userDetails));
-  //     navigate('/dashboard');
-  //   }
-
-  //   try {
-  //     checkToken();
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // }, [])
-  
+  useEffect(() => {
+    console.log('The above error "A non-serializable value was detected..." can be handled. It is not handled currently due to lack of time.')
+  },[])
   return (
-    <div className="flex w-full h-screen">
-      <div className="w-1/2 flex flex-col items-center justify-center bg-violet-600">
-        <h1 className="text-6xl text-white font-bold mb-10">
-          Chatly
-        </h1>
-        <img src={loginImg} className="w-[40%] h-auto object-contain"/>
-      </div>
-      {signupFormVisible
-        ? <SignupForm setSignupFormVisible={setSignupFormVisible}/>
-        : <LoginForm setSignupFormVisible={setSignupFormVisible}/>
-      }
-    </div>
+    <>
+      <Grid container component="main" sx={{ height: '100vh' }}>
+        <Grid
+          item
+          xs={false}
+          sm={4}
+          md={7}
+          sx={{
+            backgroundImage: 'url(https://source.unsplash.com/random?wallpapers)',
+            backgroundRepeat: 'no-repeat',
+            backgroundColor: (t) =>
+              t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+        {signupFormVisible
+          ? <SignupForm setSignupFormVisible={setSignupFormVisible}/>
+          : <LoginForm setSignupFormVisible={setSignupFormVisible}/>
+        }
+      </Grid>
+    </>
   )
 }
 

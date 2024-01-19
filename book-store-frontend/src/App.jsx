@@ -1,15 +1,14 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
-
 import Login from './components/Login.jsx'
-import { store, persistor } from './store/store'
 import CssBaseline from '@mui/material/CssBaseline';
 import Cart from './components/Cart.jsx';
 import Orders from './components/Orders.jsx';
 import BookStore from './components/BookStore.jsx';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from './store/store'
 
 const router = createBrowserRouter([
   {

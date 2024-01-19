@@ -29,9 +29,6 @@ export class AppModule implements NestModule {
       },{
         path: 'users/place-order',
         method: RequestMethod.POST
-      },{
-        path: 'books',
-        method: RequestMethod.GET
       })
   }
 }

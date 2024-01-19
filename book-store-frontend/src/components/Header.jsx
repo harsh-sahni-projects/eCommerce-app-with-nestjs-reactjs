@@ -1,21 +1,18 @@
-import { useSelector, useDispatch } from "react-redux";
+import axios from 'axios';
 import * as React from 'react';
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { SERVER_URL } from '../assets/constants';
+import { userActions } from "../store/user-slice";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import { useNavigate } from "react-router-dom";
-
-import { SERVER_URL } from '../assets/constants';
-import axios from 'axios';
-import { userActions } from "../store/user-slice";
 
 axios.defaults.withCredentials = true;
 
-const Header = (props) => {
+const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const totalItems = useSelector(state => state.cart.totalItems);
@@ -29,11 +26,15 @@ const Header = (props) => {
         navigate('/');
       }
     } catch (err) {
-      const errMsg = err?.response?.data?.message ?? err.message;
       console.log(err);
-      alert(errMsg);
-      if (err?.response?.status == 401) 
+      let status = err?.response?.status;
+      let errMsg = err?.response?.data?.message ?? err.message;
+      if (err?.response?.status == 401) {
+        dispatch(userActions.setUser(null));
         navigate('/');
+      } else {
+        alert(errMsg);
+      }
     }
   }
   return (
@@ -48,12 +49,11 @@ const Header = (props) => {
           {!user && <Button color="inherit" onClick={e => navigate('/login')}>Login</Button>}
           {user && (
             <>
-            <Button color="inherit" onClick={e => navigate('/orders')}>My orders</Button>
-            <Button color="inherit" onClick={logout}>Logout</Button>
+              <Button color="inherit" onClick={e => navigate('/orders')}>My orders</Button>
+              <Button color="inherit" onClick={logout}>Logout</Button>
             </>
           )
           }
-          
         </Toolbar>
       </AppBar>
     </Box>

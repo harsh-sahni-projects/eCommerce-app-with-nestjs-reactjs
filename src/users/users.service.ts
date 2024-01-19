@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
-
 import * as mongoose from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/users.schema';
@@ -96,28 +95,9 @@ export class UsersService {
 
   async placeOrder(orderDetails: PlaceOrderDto[], req: Request, res: Response) {
     const userDetails = req['userDetails'];
-    // const usersArr = await this.userModel.find({username: userDetails.username});
-    // console.log(JSON.stringify(usersArr,null,2));
     await this.userModel.updateOne({ username: userDetails.username }, { $push: { orders: orderDetails}});
     res.send({
       status: 'Order placed',
     })
   }
-
-  // getUserDetails(username: string) {
-  //   const index = this.allUsers.findIndex(user => user.username == username);
-  //   if 
-  // }
-
-  // findOne(id: number) {
-  //   return `This action returns a #${id} user`;
-  // }
-
-  // update(id: number, updateUserDto: UpdateUserDto) {
-  //   return `This action updates a #${id} user`;
-  // }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} user`;
-  // }
 }

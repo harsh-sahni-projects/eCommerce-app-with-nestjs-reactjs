@@ -1,71 +1,23 @@
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaArrowLeftLong } from "react-icons/fa6";
-import { IoIosCheckboxOutline  } from "react-icons/io";
 import { SERVER_URL } from '../assets/constants';
 import { useDispatch } from "react-redux";
 import { userActions } from "../store/user-slice";
-
+import { Box, Grid, Paper, TextField, Typography, Button } from '@mui/material';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 
 const SignupForm = (props) => {
   const { setSignupFormVisible } = props;
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [username, setUsername] = useState('harsh');
-  const [password, setPassword] = useState('123');
-  const [confirmPassword, setConfirmPassword] = useState('123');
-
-  let errorClass = 'border-red-400';
-  let inputFiledStyles = "outline-none px-4 py-2 rounded-full w-96 focus:border-violet-400 border-2 ";
-
-  const [isUsernameValid, setIsUsernameValid] = useState(true);
-  const [isPasswordValid, setIsPasswordValid] = useState(true);
-  const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(true);
-
-
-  let usernameStyles = inputFiledStyles + (!isUsernameValid ? errorClass : '');
-  let passwordStyes = inputFiledStyles + (!isPasswordValid ? errorClass : '');
-  let confirmPasswordStyles = inputFiledStyles + (!isConfirmPasswordValid ? errorClass : '');
-  let passwordValidityMsgStyles = "text-[0.95rem] ml-2 mt-2  " + ((password.length >= 8) ? 'text-green-500' : 'text-slate-300');
-
-  const validateForm = () => {
-    let isFormValid = (username.trim().length > 0)
-                   && (password.length >= 8)
-                   && (confirmPassword === password);
-    if (!isFormValid) {
-      if (!(username.trim().length > 0)) {
-        setIsUsernameValid(false);
-        alert('Username can\'t be empty');
-      } else {
-        setIsUsernameValid(true);
-      }
-      if (!(password.length >= 8)) {
-        setIsPasswordValid(false);
-        alert('Password must be at least 8 characters long')
-      } else {
-        setIsPasswordValid(true);
-      }
-      if (!(confirmPassword === password)) {
-        setIsConfirmPasswordValid(false);
-        alert('Confirm password didn\'t match');
-      } else {
-        setIsConfirmPasswordValid(true);
-      }
-      return false;
-    }
-    setIsUsernameValid(true);
-    setIsPasswordValid(true);
-    setIsConfirmPasswordValid(true);
-    return true;
-  }
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleSignup = async (e) => {
     try {
       e.preventDefault();
-  
-      // const isFormValid = validateForm();
-      // if (!isFormValid) return;
       
       const payload = {
         username,
@@ -74,7 +26,7 @@ const SignupForm = (props) => {
       }
       const endpoint = SERVER_URL + '/users/create';
       const res = await axios.post(endpoint, payload);
-      const userDetails = res.data.userDetails;
+      const userDetails = res.data;
       dispatch(userActions.setUser(userDetails));
       navigate('/');
     } catch (err) {
@@ -89,39 +41,77 @@ const SignupForm = (props) => {
     setSignupFormVisible(false);
   }
   return (
-    <div className="flex flex-col justify-center items-center w-1/2">
-      <h1 className="text-4xl mb-4 font-semibold">Signup</h1>
-      <form className="flex flex-col" onSubmit={handleSignup}>
-        <label htmlFor="username"
-          className="font-bold m-2">Username</label>
-        <input type="text" id="username" placeholder="" autoComplete="off" required
-          onChange={e => setUsername(e.target.value.trim())}
-          value={username}
-          className={usernameStyles}/>
-        <label htmlFor="password"
-          className="font-bold mt-6 ml-2 mb-2">Password</label>
-        <input type="password" id="password" placeholder="" required
-          onChange={e => setPassword(e.target.value.trim())}
-          value={password}
-          className={passwordStyes}/>
-        <span className={passwordValidityMsgStyles}><IoIosCheckboxOutline className="inline mb-1" /> Min 8 characters</span>
-        <label htmlFor="confirmPassword"
-          className="font-bold mt-6 ml-2 mb-2">Confirm Password</label>
-        <input type="password" id="confirmPassword" required
-          onChange={e => setConfirmPassword(e.target.value.trim())}
-          value={confirmPassword}
-          className={confirmPasswordStyles} />
-        <button
-          className="w-96 rounded-full text-white bg-violet-800 hover:bg-violet-900 p-3 my-4 mt-6 font-semibold">
-          Create Account
-        </button>
-        <div className="mt-2 ml-2">
-          <span onClick={hideSignupForm}
-            className="ml-2 font-bold text-violet-800 cursor-pointer">
-            <FaArrowLeftLong className="inline"/> Back to Login</span>
-        </div>
-      </form>
-    </div>
+    <>
+      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+          <Box
+            sx={{
+              my: 8,
+              mx: 4,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <Typography component="h1" variant="h5">
+              Sign in
+            </Typography>
+            <Box noValidate sx={{ mt: 1 }}>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                label="Username"
+                name="username"
+                autoComplete="off"
+                autoFocus
+                id="username"
+                value={username}
+                onChange={e => setUsername(e.target.value.trim())}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="off"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Confirm Password"
+                type="password"
+                id="confirmPassword"
+                autoComplete="current-password"
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+              />
+              <Button
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+                onClick={handleSignup}
+              >
+                Create Account
+              </Button>
+              <Grid container>
+                <Grid item>
+                  <Button size="small" variant="text" sx={{mb:2}} onClick={hideSignupForm}>
+                    <KeyboardBackspaceIcon sx={{ mr:1}} />
+                    Back to login
+                  </Button>
+                </Grid>
+              </Grid>
+            </Box>
+          </Box>
+        </Grid>
+  </>
   )
 }
 
