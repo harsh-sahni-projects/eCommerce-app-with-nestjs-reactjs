@@ -9,7 +9,6 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "start:dev-original": "nest start --watch",
     "start:dev": "concurrently \"(nest start --watch)\" \"(cd book-store-frontend && npm run dev)\"",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",

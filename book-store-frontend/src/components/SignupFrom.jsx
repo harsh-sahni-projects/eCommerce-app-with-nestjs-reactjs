@@ -32,7 +32,6 @@ const SignupForm = (props) => {
     } catch (err) {
       const errMsg = (err?.response?.data) ? err.response.data.message : err.message;
       console.log(err);
-      console.log(errMsg)
       alert(errMsg);
     }
   }

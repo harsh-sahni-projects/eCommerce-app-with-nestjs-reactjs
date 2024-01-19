@@ -37,7 +37,6 @@ export const verifyToken = (encryptedToken) => {
     return decodedToken;
   } catch (err) {
     console.log(err);
-    console.log('Above error occurred while verifying token (token-manager.js)');
     throw err;
   }
 }

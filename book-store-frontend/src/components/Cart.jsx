@@ -43,7 +43,6 @@ const Cart = () => {
         amount: cart.amount,
         timestamp: new Date()
       })
-      console.log(res.data);
       alert(res.data.status);
     } catch (err) {
       console.log(err)
